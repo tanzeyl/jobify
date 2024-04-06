@@ -1,38 +1,98 @@
-.App {
-  text-align: center;
+body {
+  margin: 0;
+  padding: 0;
+  background-image: url("./styles/images/background.jpg");
+  background-size: cover;
+  background-repeat: no-repeat;
+  overflow: hidden;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
+.card {
+  margin-top: 20%;
+  background-color: #0f0f0f81;
   color: white;
 }
 
-.App-link {
-  color: #61dafb;
+.signupContainer {
+  margin-top: 5%;
+  height: 90vh;
+  width: 82vw;
+  background-color: rgba(240, 248, 255, 0.543);
+  border-radius: 20px;
+  overflow-y: scroll;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.loginContainer {
+  position: relative;
+  top: 30%;
+  left: 22%;
+}
+
+.signupLeft {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.companySignup {
+  background-color: white;
+  padding: 3%;
+  border-radius: 40px;
+  box-shadow: -1px -1px 20px 0px black;
+}
+
+.separator {
+  border-left: 1px solid rgba(83, 83, 83, 0.594);
+  height: 90vh;
+  margin: 0 10px;
+}
+
+.googleBtn {
+  width: 230px;
+  height: 40px;
+  border-radius: 5px;
+  border: none;
+  outline: none;
+  background-color: white;
+  box-shadow: rgb(0 0 0 / 20%) 0px 3px 1px -2px,
+    rgb(0 0 0 / 14%) 0px 2px 2px 0px, rgb(0 0 0 / 12%) 0px 1px 5px 0px;
+  font-size: 16px;
+  font-weight: 500;
+  margin: 0 0 20px 0;
+  color: #2c444e;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.googleBtn > img {
+  width: 30px;
+  height: 30px;
+  object-fit: cover;
+}
+
+.googleBtn > span {
+  margin-left: 10px;
+}
+
+.profileContainer {
+  background-color: rgba(255, 255, 255, 0.409);
+  border-radius: 30px;
+  width: 80vw;
+  height: 95vh;
+  margin-left: 2%;
+}
+
+.companyProfileImage {
+  border-radius: 50%;
+  width: 200px;
+  height: 200px;
+  margin: 2%;
+  border: 4px solid black;
+}
+
+.companyDetails {
+  margin: 2%;
 }

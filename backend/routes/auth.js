@@ -1,6 +1,8 @@
 const express = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const upload = require("../middleware/multer");
+const cloudinary = require("cloudinary").v2;
 const { body, validationResult } = require("express-validator");
 const router = express.Router();
 const nodemailer = require("nodemailer");
@@ -24,19 +26,31 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+cloudinary.config({
+  cloud_name: "djptg7azn",
+  api_key: "669116195862924",
+  api_secret: "RWFuWEyB7yj5s8CcZxlBNwsNeFY",
+});
+
 // ROUTE 1: Create a company using POST => "/api/auth/createCompany". Does not require log in.
 router.post(
   "/createCompany",
-  [body("password").notEmpty().isLength({ min: 8 }), body("email").notEmpty()],
+  [
+    (body("password").notEmpty().isLength({ min: 8 }),
+    body("email").notEmpty()),
+  ],
+  upload.single("image"),
   async (req, res) => {
-    let currentBalance = 200;
-
-    //Hashing the password
-    const salt = await bcrypt.genSalt(10);
-    const securePassword = await bcrypt.hash(req.body.password, salt);
-
-    // Check if the email already exists.
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      res.status(400).json({ errors: errors.array() });
+    }
     try {
+      let currentBalance = 200;
+      //Hashing the password
+      const salt = await bcrypt.genSalt(10);
+      const securePassword = await bcrypt.hash(req.body.password, salt);
+      // Check if the email already exists.
       let company = await Company.findOne({
         email: req.body.email,
       });
@@ -55,16 +69,30 @@ router.post(
       if (req.body.teamSize.length > 0) {
         currentBalance += 20;
       }
-      if (req.body.logoLink.length > 0) {
+      if (req.body.logo) {
         currentBalance += 50;
       }
+      const { logo } = req.body;
+      const uploadedImage = await cloudinary.uploader.upload(
+        logo,
+        {
+          upload_preset: "vdl24evr",
+          public_id: `${req.body.name} - avatar`,
+          allowed_formats: ["png", "jpg", "jpeg", "svg", "ico", "jfif", "webp"],
+        },
+        function (error, result) {
+          if (error) {
+            console.log(error);
+          }
+        }
+      );
       company = await Company.create({
-        name: req.body.name.length > 0 ? req.body.name : "",
+        name: req.body.name,
         websiteLink: req.body.websiteLink,
         email: req.body.email,
         password: securePassword,
         teamSize: req.body.teamSize,
-        logoLink: req.body.logoLink,
+        logoLink: uploadedImage.secure_url,
         balance: currentBalance,
       });
       const transaction = await TransactionsCompany.create({
@@ -83,7 +111,7 @@ router.post(
     } catch (err) {
       res
         .status(500)
-        .json({ success: false, message: "Internal server error." });
+        .json({ success: false, message: "Internal server error.", err });
     }
   }
 );
@@ -405,6 +433,19 @@ router.get("/paymentHistory", fetchUser, async (req, res) => {
       student: req.user.id,
     });
     res.status(200).json({ success: true, transactions });
+  } catch (err) {
+    res.status(500).json({ success: false, message: "Internal server error." });
+  }
+});
+
+// ROUTE 10: Get all details of a company using GET. => "/api/auth/companyProfile". Requires log-in.
+router.get("/companyProfile", fetchCompany, async (req, res) => {
+  try {
+    const company = await Company.findById(req.company.id);
+    if (!company) {
+      res.status(404).json({ success: false, message: "Invalid credentials." });
+    }
+    res.status(200).json({ success: true, company });
   } catch (err) {
     res.status(500).json({ success: false, message: "Internal server error." });
   }
