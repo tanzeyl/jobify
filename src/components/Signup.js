@@ -19,7 +19,6 @@ function Signup() {
     teamSize: "",
     password: "",
   });
-  const [logo, setLogo] = useState(null);
 
   const selectType = (e) => {
     setType(e.target.value);
@@ -39,9 +38,7 @@ function Signup() {
 
   const onCompanyFileChange = (e) => {
     const file = e.target.files[0];
-    setLogo(file);
     previewFiles(file);
-    console.log(file);
   };
 
   const handleCompanySubmit = async (e) => {
@@ -68,6 +65,7 @@ function Signup() {
       const data = await response.json();
       if (data.success) {
         localStorage.setItem("token", data.authtoken);
+        localStorage.setItem("userType", "company");
         setLoading(false);
         navigate("/companyProfile");
       }
@@ -177,6 +175,7 @@ function Signup() {
                       src={image}
                       width={200}
                       height={200}
+                      alt="Logo"
                     />
                   )}
                 </div>

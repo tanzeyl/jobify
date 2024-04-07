@@ -163,13 +163,12 @@ router.post(
         transporter.sendMail(mailOptions, (error, info) => {
           if (error) {
             console.log(error);
-            res.status(500).send("Failed to send OTP");
+            res.status(500).send("Failed to send email.");
           } else {
-            console.log("Email sent: " + info.response);
-            res.status(200).send("OTP sent successfully");
+            res.status(200).send("Email sent successfully");
           }
         });
-        res.json(job);
+        res.json({ success: true, message: "Job created successfully." });
       } else {
         res.json({ success: false, message: "Insufficient balance." });
       }
@@ -450,5 +449,67 @@ router.get("/companyProfile", fetchCompany, async (req, res) => {
     res.status(500).json({ success: false, message: "Internal server error." });
   }
 });
+
+// ROUTE 11: Update details of a company using POST. => "/api/auth/updateCompanyDetails". Requires log-in.
+router.post(
+  "/updateCompanyDetails",
+  upload.single("image"),
+  fetchCompany,
+  async (req, res) => {
+    try {
+      const { name, websiteLink, email, teamSize } = req.body;
+      let newDetails = {};
+      if (name) newDetails.name = name;
+      if (websiteLink) newDetails.websiteLink = websiteLink;
+      if (email) newDetails.email = email;
+      if (teamSize) newDetails.teamSize = teamSize;
+      let company = await Company.findById(req.company.id);
+      if (!company) {
+        res
+          .status(404)
+          .json({ success: false, message: "Invalid credentials." });
+      }
+      const { logo } = req.body;
+      if (logo) {
+        const uploadedImage = await cloudinary.uploader.upload(
+          logo,
+          {
+            upload_preset: "vdl24evr",
+            public_id: `${req.body.name} - avatar`,
+            allowed_formats: [
+              "png",
+              "jpg",
+              "jpeg",
+              "svg",
+              "ico",
+              "jfif",
+              "webp",
+            ],
+          },
+          function (error, result) {
+            if (error) {
+              console.log(error);
+            }
+          }
+        );
+        newDetails.logoLink = uploadedImage.secure_url;
+      }
+      company = await Company.findByIdAndUpdate(
+        req.company.id,
+        { $set: newDetails },
+        { new: true }
+      );
+      res.status(200).json({
+        success: true,
+        message: "Company details updated.",
+        details: newDetails,
+      });
+    } catch (err) {
+      res
+        .status(500)
+        .json({ success: false, message: "Internal server error." });
+    }
+  }
+);
 
 module.exports = router;

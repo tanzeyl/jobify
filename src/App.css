@@ -96,3 +96,16 @@ body {
 .companyDetails {
   margin: 2%;
 }
+
+.createJobContainer {
+  width: 90vw;
+  margin-left: 40%;
+}
+
+.dropdown-item {
+  cursor: pointer;
+}
+
+.dropdown-item:hover {
+  background-color: rgba(150, 150, 150, 0.772);
+}

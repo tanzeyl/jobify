@@ -24,6 +24,7 @@
     "clsx": "^2.1.0",
     "concurrently": "^8.2.2",
     "cookie-session": "^2.1.0",
+    "country-state-city": "^3.2.1",
     "framer-motion": "^11.0.24",
     "lucide-react": "^0.363.0",
     "passport": "^0.7.0",

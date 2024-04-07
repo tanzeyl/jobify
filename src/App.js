@@ -1,15 +1,15 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { Cloudinary } from "@cloudinary/url-gen";
 import Navbar from "./components/Navbar";
 import About from "./components/About";
 import Signup from "./components/Signup";
 import Login from "./components/Login";
 import "./App.css";
 import CompanyProfile from "./components/CompanyProfile";
+import CreateJob from "./components/CreateJob";
+import CompanyJobs from "./components/CompanyJobs";
 
 function App() {
-  const cld = new Cloudinary({ cloud: { cloudName: "djptg7azn" } });
   return (
     <>
       <Router>
@@ -27,6 +27,8 @@ function App() {
                 path="/companyProfile"
                 element={<CompanyProfile />}
               />
+              <Route exact path="/createJob" element={<CreateJob />} />
+              <Route exact path="/allPostedJobs" element={<CompanyJobs />} />
             </Routes>
           </div>
         </div>

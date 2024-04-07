@@ -70,6 +70,37 @@ export default function Navbar() {
               </div>
             )}
 
+            <div className="option">
+              {closed && (
+                <Link className="nav-link optionContent" to="/">
+                  <i className="fa-solid fa-address-card"></i>
+                </Link>
+              )}
+              {!closed && (
+                <Link className=" nav-link optionContent" to="/">
+                  <i className="fa-solid fa-address-card"></i>
+                  <h5 className="optionTitle">About Us</h5>
+                </Link>
+              )}
+            </div>
+
+            {localStorage.getItem("userType") &&
+              localStorage.getItem("userType") === "company" && (
+                <div className="option">
+                  {closed && (
+                    <Link className="nav-link optionContent" to="/createJob">
+                      <i className="fa-solid fa-plus"></i>
+                    </Link>
+                  )}
+                  {!closed && (
+                    <Link className="nav-link optionContent" to="/createJob">
+                      <i className="fa-solid fa-plus"></i>
+                      <h5 className="optionTitle">Create Job</h5>
+                    </Link>
+                  )}
+                </div>
+              )}
+
             {localStorage.getItem("token") && (
               <div className="option">
                 {closed && (
@@ -93,20 +124,6 @@ export default function Navbar() {
                 )}
               </div>
             )}
-
-            <div className="option">
-              {closed && (
-                <Link className="nav-link optionContent" to="/">
-                  <i className="fa-solid fa-address-card"></i>
-                </Link>
-              )}
-              {!closed && (
-                <Link className=" nav-link optionContent" to="/">
-                  <i className="fa-solid fa-address-card"></i>
-                  <h5 className="optionTitle">About Us</h5>
-                </Link>
-              )}
-            </div>
           </div>
         </div>
       </div>
