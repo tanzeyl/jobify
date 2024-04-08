@@ -19,6 +19,7 @@ export default function Navbar() {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("userType");
     navigate("/signup");
   };
 
@@ -70,19 +71,51 @@ export default function Navbar() {
               </div>
             )}
 
-            <div className="option">
-              {closed && (
-                <Link className="nav-link optionContent" to="/">
-                  <i className="fa-solid fa-address-card"></i>
-                </Link>
+            {localStorage.getItem("userType") &&
+              localStorage.getItem("userType") === "company" && (
+                <div className="option">
+                  {closed && (
+                    <Link
+                      className="nav-link optionContent"
+                      to="/companyProfile"
+                    >
+                      <i className="fa-solid fa-magnifying-glass"></i>
+                    </Link>
+                  )}
+                  {!closed && (
+                    <Link
+                      className="nav-link optionContent"
+                      to="/companyProfile"
+                    >
+                      <i className="fa-solid fa-magnifying-glass"></i>
+                      <h5 className="optionTitle">View Profile</h5>
+                    </Link>
+                  )}
+                </div>
               )}
-              {!closed && (
-                <Link className=" nav-link optionContent" to="/">
-                  <i className="fa-solid fa-address-card"></i>
-                  <h5 className="optionTitle">About Us</h5>
-                </Link>
+
+            {localStorage.getItem("userType") &&
+              localStorage.getItem("userType") === "company" && (
+                <div className="option">
+                  {closed && (
+                    <Link
+                      className="nav-link optionContent"
+                      to="/allPostedJobs"
+                    >
+                      <i className="fa-solid fa-list"></i>
+                    </Link>
+                  )}
+                  {!closed && (
+                    <Link
+                      className="nav-link optionContent"
+                      to="/allPostedJobs"
+                    >
+                      <i className="fa-solid fa-list"></i>
+                      <h5 className="optionTitle">View Jobs</h5>
+                    </Link>
+                  )}
+                </div>
               )}
-            </div>
 
             {localStorage.getItem("userType") &&
               localStorage.getItem("userType") === "company" && (
@@ -100,6 +133,20 @@ export default function Navbar() {
                   )}
                 </div>
               )}
+
+            <div className="option">
+              {closed && (
+                <Link className="nav-link optionContent" to="/">
+                  <i className="fa-solid fa-address-card"></i>
+                </Link>
+              )}
+              {!closed && (
+                <Link className=" nav-link optionContent" to="/">
+                  <i className="fa-solid fa-address-card"></i>
+                  <h5 className="optionTitle">About Us</h5>
+                </Link>
+              )}
+            </div>
 
             {localStorage.getItem("token") && (
               <div className="option">

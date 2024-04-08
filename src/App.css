@@ -109,3 +109,18 @@ body {
 .dropdown-item:hover {
   background-color: rgba(150, 150, 150, 0.772);
 }
+
+.tableContainer {
+  width: 82vw;
+}
+
+.table {
+  background-color: rgb(255, 255, 255);
+  border-radius: 20px;
+}
+
+th,
+td {
+  padding: 1%;
+  text-align: center;
+}

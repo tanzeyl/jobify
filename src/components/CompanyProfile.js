@@ -25,7 +25,6 @@ function CompanyProfile() {
 
   const onChange = (e) => {
     setDetails({ ...details, [e.target.name]: e.target.value });
-    console.log("Hello");
   };
 
   const previewFiles = async (file) => {

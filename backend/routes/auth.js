@@ -349,6 +349,7 @@ router.get("/apply/:id", fetchUser, async (req, res) => {
         });
       }
       let applicants = job.applicants;
+      applicants.push(req.user.id);
       job = await Jobs.findByIdAndUpdate(
         req.params.id,
         { $set: { applicants } },
@@ -511,5 +512,27 @@ router.post(
     }
   }
 );
+
+// ROUTE 12: View all posted jobs using GET. => "/api/auth/allPostedJobs". Requires log-in.
+router.get("/allPostedJobs", fetchCompany, async (req, res) => {
+  try {
+    const jobs = await Jobs.find({ company: req.company.id });
+    res.status(200).json({ success: true, jobs });
+  } catch (err) {
+    res.status(500).json({ success: false, message: "Internal server error." });
+  }
+});
+
+// ROUTE 12: Get applicant details using POST. => "/api/auth/getApplicantDetails". Requires log-in.
+router.post("/getApplicantDetails", fetchCompany, async (req, res) => {
+  try {
+    const student = await Student.findById(req.body.studentId).select(
+      "-password"
+    );
+    res.status(200).json({ success: true, student });
+  } catch (err) {
+    res.status(500).json({ success: false, message: "Internal server error." });
+  }
+});
 
 module.exports = router;
