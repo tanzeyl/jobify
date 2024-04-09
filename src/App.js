@@ -8,6 +8,8 @@ import "./App.css";
 import CompanyProfile from "./components/CompanyProfile";
 import CreateJob from "./components/CreateJob";
 import CompanyJobs from "./components/CompanyJobs";
+import Alert from "./components/Alert";
+import StudentProfile from "./components/StudentProfile";
 
 function App() {
   return (
@@ -18,6 +20,7 @@ function App() {
             <Navbar />
           </div>
           <div className="col-md-7">
+            <Alert />
             <Routes>
               <Route exact path="/" element={<About />} />
               <Route exact path="/signup" element={<Signup />} />
@@ -29,6 +32,11 @@ function App() {
               />
               <Route exact path="/createJob" element={<CreateJob />} />
               <Route exact path="/allPostedJobs" element={<CompanyJobs />} />
+              <Route
+                exact
+                path="/studentProfile"
+                element={<StudentProfile />}
+              />
             </Routes>
           </div>
         </div>

@@ -2,16 +2,25 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import googleLogo from "../styles/images/google.png";
 import Spinner from "./Spinner";
+import SelectLocation from "./SelectLocation";
 
 function Signup() {
   const navigate = useNavigate();
+
   if (localStorage.getItem("token")) {
     navigate("/companyProfile");
   }
+
   document.title = "Jobify - Sign Up!";
+
+  const [location, setLocation] = useState("");
   const [type, setType] = useState("company");
   const [image, setImage] = useState("");
+  const [resume, setResume] = useState("");
+  const [profile, setProfile] = useState("");
   const [loading, setLoading] = useState(false);
+  const [companyFlag, setCompanyFlag] = useState(true);
+  const [studentFlag, setstudentFlag] = useState(false);
   const [details, setDetails] = useState({
     name: "",
     website: "",
@@ -19,26 +28,56 @@ function Signup() {
     teamSize: "",
     password: "",
   });
+  const [student, setStudent] = useState({
+    name: "",
+    email: "",
+    password: "",
+    phone: "",
+  });
 
   const selectType = (e) => {
     setType(e.target.value);
+    setCompanyFlag(!companyFlag);
+    setstudentFlag(!studentFlag);
   };
 
   const onCompanyChange = (e) => {
     setDetails({ ...details, [e.target.name]: e.target.value });
   };
 
-  const previewFiles = async (file) => {
+  const onStudentChange = (e) => {
+    setStudent({ ...student, [e.target.name]: e.target.value });
+  };
+
+  const previewFiles = async (file, type, flag) => {
     const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onloadend = () => {
-      setImage(reader.result);
+      if (type === "company") {
+        setImage(reader.result);
+      } else if (type === "student") {
+        if (flag === 0) {
+          setResume(reader.result);
+        } else {
+          setProfile(reader.result);
+        }
+      }
     };
   };
 
   const onCompanyFileChange = (e) => {
     const file = e.target.files[0];
-    previewFiles(file);
+    previewFiles(file, "company", 0);
+  };
+
+  const onStudentResumeChange = (e) => {
+    const file = e.target.files[0];
+    previewFiles(file, "student", 0);
+  };
+
+  const onStudentProfileChange = (e) => {
+    const file = e.target.files[0];
+    previewFiles(file, "student", 1);
   };
 
   const handleCompanySubmit = async (e) => {
@@ -74,6 +113,40 @@ function Signup() {
     }
   };
 
+  const handleStudentSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      setLoading(true);
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL}/api/auth/studentSignup`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: student.name,
+            email: student.email,
+            password: student.password,
+            phone: student.phone,
+            location: location,
+            resume: resume,
+            picture: profile,
+          }),
+        }
+      );
+      setLoading(false);
+      const data = await response.json();
+      if (data.success) {
+        localStorage.setItem("token", data.authtoken);
+        localStorage.setItem("userType", "student");
+        navigate("/studentProfile");
+      }
+    } catch (error) {
+      console.error("Error saving user profile:", error);
+    }
+  };
+
   return (
     <>
       <div className="signupContainer">
@@ -99,7 +172,7 @@ function Signup() {
               <option value="company">Company</option>
               <option value="student">Student</option>
             </select>
-            {type === "company" && (
+            {companyFlag && (
               <form
                 className="companySignup mt-2"
                 onSubmit={handleCompanySubmit}
@@ -189,6 +262,110 @@ function Signup() {
                     id="password"
                     name="password"
                     onChange={onCompanyChange}
+                  />
+                </div>
+                <div className="d-flex justify-content-start">
+                  <button type="submit" className="btn btn-primary">
+                    Create Account
+                  </button>
+                  {loading && <Spinner />}
+                </div>
+              </form>
+            )}
+            {studentFlag && (
+              <form
+                className="companySignup mt-2"
+                onSubmit={handleStudentSubmit}
+                encType="multipart/form-data"
+              >
+                <div className="mb-3">
+                  <label htmlFor="name" className="form-label">
+                    Student Name
+                  </label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    id="name"
+                    name="name"
+                    onChange={onStudentChange}
+                  />
+                </div>
+                <div className="mb-3">
+                  <label htmlFor="website" className="form-label">
+                    Email
+                  </label>
+                  <input
+                    type="email"
+                    className="form-control"
+                    id="email"
+                    name="email"
+                    onChange={onStudentChange}
+                  />
+                </div>
+                <div className="mb-3">
+                  <label htmlFor="email" className="form-label">
+                    Phone
+                  </label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    name="phone"
+                    id="phone"
+                    onChange={onStudentChange}
+                  />
+                </div>
+                <SelectLocation setLocation={setLocation} />
+                <input
+                  type="text"
+                  className="form-control"
+                  disabled={true}
+                  value={location}
+                />
+                <div className="mb-3">
+                  <label htmlFor="logo" className="form-label">
+                    Upload Resume
+                  </label>
+                  <input
+                    type="file"
+                    className="form-control"
+                    name="resume"
+                    id="resume"
+                    onChange={onStudentResumeChange}
+                    accept=".pdf,.doc,.docx"
+                  />
+                </div>
+                <div className="mb-3">
+                  <label htmlFor="logo" className="form-label">
+                    Upload Profile Picture
+                  </label>
+                  <input
+                    type="file"
+                    className="form-control"
+                    name="picture"
+                    id="picture"
+                    onChange={onStudentProfileChange}
+                    accept=".jpg,.png,.jpeg,.webp,.svg,.ico,.jfif"
+                  />
+                  {profile && (
+                    <img
+                      className="img img-fluid mt-4"
+                      src={profile}
+                      width={200}
+                      height={200}
+                      alt="Logo"
+                    />
+                  )}
+                </div>
+                <div className="mb-3">
+                  <label htmlFor="password" className="form-label">
+                    Password
+                  </label>
+                  <input
+                    type="password"
+                    className="form-control"
+                    id="password"
+                    name="password"
+                    onChange={onStudentChange}
                   />
                 </div>
                 <div className="d-flex justify-content-start">

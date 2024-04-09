@@ -223,27 +223,75 @@ router.post(
 // ROUTE 4: Student sign-up using POST => "/api/auth/studentSignup". Does not require log-in.
 router.post(
   "/studentSignup",
-  [body("email").notEmpty(), body("password").notEmpty()],
+  [
+    body("name").notEmpty(),
+    body("email").notEmpty(),
+    body("password").notEmpty(),
+    body("phone").notEmpty(),
+    body("location").notEmpty(),
+  ],
+  upload.single("image"),
   async (req, res) => {
-    //Hashing the password
-    const salt = await bcrypt.genSalt(10);
-    const securePassword = await bcrypt.hash(req.body.password, salt);
-
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      res.status(400).json({ errors: errors.array() });
+    }
     try {
+      //Hashing the password
+      const salt = await bcrypt.genSalt(10);
+      const securePassword = await bcrypt.hash(req.body.password, salt);
       // Check if the email already exists.
       let student = await Student.findOne({
         email: req.body.email,
       });
+
       if (student) {
         return res.status(400).json({
           success: false,
           error: "A user with this email exists already! Kindly log-in.",
         });
       }
+
+      const { picture } = req.body;
+      const uploadedImage = await cloudinary.uploader.upload(
+        picture,
+        {
+          upload_preset: "vdl24evr",
+          public_id: `${req.body.name} - avatar`,
+          allowed_formats: ["png", "jpg", "jpeg", "svg", "ico", "jfif", "webp"],
+        },
+        function (error, result) {
+          if (error) {
+            console.log(error);
+          }
+        }
+      );
+
+      const { resume } = req.body;
+      const uploadedResume = await cloudinary.uploader.upload(
+        resume,
+        {
+          upload_preset: "vdl24evr",
+          public_id: `${req.body.name} - Resume`,
+          allowed_formats: ["pdf", "docx"],
+        },
+        function (error, result) {
+          if (error) {
+            console.log(error);
+          }
+        }
+      );
+
       student = await Student.create({
+        name: req.body.name,
         email: req.body.email,
         password: securePassword,
+        resumeLink: uploadedResume.secure_url,
+        phone: req.body.phone,
+        pictureLink: uploadedImage.secure_url,
+        location: req.body.location,
       });
+
       const transaction = await TransactionsStudent.create({
         student: student._id,
         type: "credit",
@@ -266,23 +314,91 @@ router.post(
 );
 
 // ROUTE 5: Student data upload using PUT => "/api/auth/addStudentDetails". Requires log-in.
-router.put("/addStudentDetails", fetchUser, async (req, res) => {
-  try {
-    const { name, resumeLink, phone, pictureLink, location } = req.body;
-    const user = await Student.findByIdAndUpdate(
-      req.user.id,
-      {
-        $set: { name, resumeLink, phone, pictureLink, location },
-      },
-      { new: true }
-    );
-    res
-      .status(200)
-      .json({ success: true, message: "User details successfully updated." });
-  } catch (err) {
-    res.status(500).json({ success: false, message: "Internal server error." });
+router.post(
+  "/addStudentDetails",
+  upload.single("image"),
+  fetchUser,
+  async (req, res) => {
+    try {
+      const { name, email, phone, location } = req.body;
+
+      let newDetails = {};
+      if (name) newDetails.name = name;
+      if (email) newDetails.email = email;
+      if (phone) newDetails.phone = phone;
+      if (location) newDetails.location = location;
+
+      let student = await Student.findById(req.user.id);
+
+      if (!student) {
+        res
+          .status(404)
+          .json({ success: false, message: "Invalid credentials." });
+      }
+
+      const { resume } = req.body;
+
+      if (resume) {
+        const uploadedResume = await cloudinary.uploader.upload(
+          resume,
+          {
+            upload_preset: "vdl24evr",
+            public_id: `${req.body.name} - Resume`,
+            allowed_formats: ["pdf", "docx"],
+          },
+          function (error, result) {
+            if (error) {
+              console.log(error);
+            }
+          }
+        );
+        newDetails.resumeLink = uploadedResume.secure_url;
+      }
+
+      const { profile } = req.body;
+
+      if (profile) {
+        const uploadedImage = await cloudinary.uploader.upload(
+          profile,
+          {
+            upload_preset: "vdl24evr",
+            public_id: `${req.body.name} - Avatar`,
+            allowed_formats: [
+              "png",
+              "jpg",
+              "jpeg",
+              "svg",
+              "ico",
+              "jfif",
+              "webp",
+            ],
+          },
+          function (error, result) {
+            if (error) {
+              console.log(error);
+            }
+          }
+        );
+        newDetails.pictureLink = uploadedImage.secure_url;
+      }
+
+      student = await Student.findByIdAndUpdate(
+        req.user.id,
+        { $set: newDetails },
+        { new: true }
+      );
+      res.status(200).json({
+        success: true,
+        message: "Company details updated.",
+        details: student,
+      });
+    } catch (err) {
+      res
+        .status(500)
+        .json({ success: false, message: "Internal server error." });
+    }
   }
-});
+);
 
 // ROUTE 6: User log-in using POST => "/api/auth/userlogin". Does not require log-in.
 router.post(
@@ -529,6 +645,16 @@ router.post("/getApplicantDetails", fetchCompany, async (req, res) => {
     const student = await Student.findById(req.body.studentId).select(
       "-password"
     );
+    res.status(200).json({ success: true, student });
+  } catch (err) {
+    res.status(500).json({ success: false, message: "Internal server error." });
+  }
+});
+
+// ROUTE 13: Get student details using GET. => "/api/auth/getStudentDetails". Requires log-in.
+router.get("/getStudentDetails", fetchUser, async (req, res) => {
+  try {
+    const student = await Student.findById(req.user.id).select("-password");
     res.status(200).json({ success: true, student });
   } catch (err) {
     res.status(500).json({ success: false, message: "Internal server error." });
