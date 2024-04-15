@@ -443,8 +443,8 @@ router.post(
 // ROUTE 7: Fetch all jobs using GET. => "/api/auth/viewJobs". Requires log-in.
 router.get("/viewJobs", fetchUser, async (req, res) => {
   try {
-    let jobs = await Jobs.find();
-    res.status(200).json({ success: true, jobs: jobs });
+    let jobs = await Jobs.find().select("-applicants");
+    res.status(200).json({ success: true, jobs });
   } catch (err) {
     res.status(500).json({ success: false, message: "Internal server error." });
   }
@@ -660,5 +660,34 @@ router.get("/getStudentDetails", fetchUser, async (req, res) => {
     res.status(500).json({ success: false, message: "Internal server error." });
   }
 });
+
+// ROUTE 14: Return name, logo and location of a company using POST. => "/api/auth/getCompany". Requires log-in.
+router.post(
+  "/getCompany",
+  fetchUser,
+  [body("companyID").notEmpty()],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      res.status(400).json({ success: false, errors: errors.array() });
+    }
+    try {
+      const company = await Company.findById(req.body.companyID).select(
+        "-password"
+      );
+      if (!company) {
+        res
+          .status(404)
+          .json({ success: false, message: "Unauthorized access." });
+      } else {
+        res.status(200).json({ success: true, company });
+      }
+    } catch (err) {
+      res
+        .status(500)
+        .json({ success: false, message: "Internal server error." });
+    }
+  }
+);
 
 module.exports = router;

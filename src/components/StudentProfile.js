@@ -307,9 +307,7 @@ function CompanyProfile() {
               />
             </div>
             <a href={details.resumeLink} target="_blank">
-              <button className="btn btn-lg btn-success">
-                Download Resume
-              </button>
+              <button className="btn btn-lg btn-success">View Resume</button>
             </a>
           </div>
         </div>

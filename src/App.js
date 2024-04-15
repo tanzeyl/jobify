@@ -10,17 +10,17 @@ import CreateJob from "./components/CreateJob";
 import CompanyJobs from "./components/CompanyJobs";
 import Alert from "./components/Alert";
 import StudentProfile from "./components/StudentProfile";
+import AllJobs from "./components/AllJobs";
 
 function App() {
   return (
     <>
       <Router>
-        <div className="row">
+        <div className="d-flex">
           <div className="col-md-2">
             <Navbar />
           </div>
           <div className="col-md-7">
-            <Alert />
             <Routes>
               <Route exact path="/" element={<About />} />
               <Route exact path="/signup" element={<Signup />} />
@@ -37,6 +37,7 @@ function App() {
                 path="/studentProfile"
                 element={<StudentProfile />}
               />
+              <Route exact path="/viewAllJobs" element={<AllJobs />} />
             </Routes>
           </div>
         </div>

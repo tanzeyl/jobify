@@ -134,6 +134,23 @@ export default function Navbar() {
                 </div>
               )}
 
+            {localStorage.getItem("userType") &&
+              localStorage.getItem("userType") === "student" && (
+                <div className="option">
+                  {closed && (
+                    <Link className="nav-link optionContent" to="/viewAllJobs">
+                      <i className="fa-solid fa-list"></i>
+                    </Link>
+                  )}
+                  {!closed && (
+                    <Link className="nav-link optionContent" to="/viewAllJobs">
+                      <i className="fa-solid fa-list"></i>
+                      <h5 className="optionTitle">All Jobs</h5>
+                    </Link>
+                  )}
+                </div>
+              )}
+
             <div className="option">
               {closed && (
                 <Link className="nav-link optionContent" to="/">
