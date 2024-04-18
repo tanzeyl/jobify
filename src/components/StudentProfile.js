@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Spinner from "./Spinner";
 import SelectLocation from "./SelectLocation";
 
@@ -259,6 +259,24 @@ function CompanyProfile() {
               Launch demo modal
             </button>
             <div className="mb-3">
+              <label htmlFor="balance" className="form-label">
+                Current Balance
+              </label>
+              <input
+                type="text"
+                className="form-control"
+                id="balance"
+                name="balance"
+                value={details.balance}
+                disabled
+              />
+            </div>
+            <Link to="/paymentForm">
+              <button className="btn btn-md btn-success mb-2">
+                Buy more coins
+              </button>
+            </Link>
+            <div className="mb-3">
               <label htmlFor="name" className="form-label">
                 Student Name
               </label>
@@ -307,7 +325,9 @@ function CompanyProfile() {
               />
             </div>
             <a href={details.resumeLink} target="_blank">
-              <button className="btn btn-lg btn-success">View Resume</button>
+              <button className="btn btn-lg btn-success mb-4">
+                View Resume
+              </button>
             </a>
           </div>
         </div>

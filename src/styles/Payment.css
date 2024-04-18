@@ -1,0 +1,30 @@
+.payment-form {
+  max-width: 40vw;
+  padding: 4%;
+  border-radius: 5px;
+  background-color: white;
+  box-shadow: 1px 1px 20px 0px rgba(0, 0, 0);
+  margin-top: 20%;
+  margin-left: 30%;
+}
+
+.card-element {
+  margin-bottom: 20px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.pay-button {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+  cursor: pointer;
+}
+
+.pay-button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}

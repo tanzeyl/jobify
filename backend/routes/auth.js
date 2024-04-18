@@ -6,6 +6,7 @@ const cloudinary = require("cloudinary").v2;
 const { body, validationResult } = require("express-validator");
 const router = express.Router();
 const nodemailer = require("nodemailer");
+const stripe = require("stripe")(process.env.REACT_APP_STRIPE_KEY);
 
 const Company = require("../models/Company");
 const Jobs = require("../models/Jobs");
@@ -15,8 +16,10 @@ const TransactionsStudent = require("../models/TransactionsStudent");
 
 const fetchCompany = require("../middleware/fetchCompany");
 const fetchUser = require("../middleware/fetchUser");
+const Job = require("../models/Jobs");
 
 const JWT_STRING = process.env.REACT_APP_JWT_SECRET;
+const DOMAIN = process.env.DOMAIN;
 
 const transporter = nodemailer.createTransport({
   service: "gmail",
@@ -701,12 +704,26 @@ router.post(
     }
     try {
       let student = await Student.findById(req.body.id);
+      const job = await Job.findById(req.body.jobId);
       let appliedJobs = student.appliedJobs;
       for (let i = 0; i < appliedJobs.length; i++) {
         if (appliedJobs[i].jobId.toString() === req.body.jobId.toString()) {
           appliedJobs[i].status = req.body.status + "ed";
           student.appliedJobs = appliedJobs;
           student = await student.save();
+          const mailOptions = {
+            from: process.env.REACT_APP_EMAIL,
+            to: student.email,
+            subject: "Job Status Update!",
+            text: `Your job status has been updated for the role of ${job.roleName}.`,
+          };
+          transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+              console.log(error);
+            } else {
+              console.log("Email sent.");
+            }
+          });
           return res
             .status(200)
             .json({ success: true, message: "Status updated successfully." });
@@ -722,5 +739,39 @@ router.post(
     }
   }
 );
+
+// ROUTE 16: Make user payments using POST. => /api/auth/userPayment. Requires log-in.
+router.post("/userPayment", fetchUser, async (req, res) => {
+  const { amount, currency, paymentMethodId } = req.body;
+  try {
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount,
+      currency,
+      payment_method_types: ["card"],
+      payment_method: paymentMethodId,
+      confirm: true,
+      return_url: `${process.env.REACT_APP_FRONTEND_URL}/studentProfile`,
+    });
+    const transaction = await TransactionsStudent.create({
+      student: req.user.id,
+      type: "credit",
+      amount: amount,
+      reason: `Completed a payment of Rs. ${amount}/-.`,
+    });
+    let student = await Student.findById(req.user.id);
+    let balance = parseInt(student.balance);
+    balance = balance + parseInt(amount);
+    student.balance = balance;
+    student.save();
+    return res.json({
+      success: true,
+      message: "Payment successful",
+      paymentIntent,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: "Payment failed" });
+  }
+});
 
 module.exports = router;
