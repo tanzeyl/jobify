@@ -42,7 +42,15 @@ const StudentSchema = new Schema({
     default: 300,
   },
 
-  appliedJobs: [{ type: mongoose.Schema.Types.ObjectId, ref: "jobs" }],
+  appliedJobs: [
+    {
+      jobId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "jobs",
+      },
+      status: String,
+    },
+  ],
 
   timestamp: {
     type: Date,

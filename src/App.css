@@ -156,3 +156,36 @@ td {
   margin: 2%;
   width: 100%;
 }
+
+.jobDetails {
+  color: #5b5b5b;
+  font-size: small;
+}
+
+.section {
+  padding: 3%;
+  border-right: 1px solid rgb(151, 151, 151);
+}
+
+.endSection {
+  border: none;
+}
+
+.sectionDetails {
+  color: black;
+  font-weight: 600;
+}
+
+.linkText {
+  color: #5b5b5b;
+  text-decoration: underline;
+  transition: 0.4s all linear;
+}
+
+.linkText:hover {
+  color: rgb(0, 47, 255);
+}
+
+.searchBox {
+  width: 82vw;
+}

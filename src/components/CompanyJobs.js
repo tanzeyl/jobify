@@ -5,11 +5,17 @@ import "../App.css";
 function CompanyJobs() {
   const [jobs, setJobs] = useState([]);
   const [applicants, setApplicants] = useState([]);
+  const [jobId, setJobId] = useState();
 
   const navigate = useNavigate();
   const ref = useRef(null);
 
-  const openModal = async (applicants) => {
+  const changeStatus = async (status, id, jobId) => {
+    console.log(status, id, jobId);
+  };
+
+  const openModal = async (applicants, id) => {
+    setJobId(id);
     let tempApplicants = [];
     for (let i = 0; i < applicants.length; i++) {
       const response = await fetch(
@@ -76,9 +82,9 @@ function CompanyJobs() {
       >
         <div
           className="modal-dialog"
-          style={{ position: "absolute", top: "14%", left: "25%" }}
+          style={{ position: "absolute", top: "14%", left: "20%" }}
         >
-          <div className="modal-content" style={{ width: "60vw" }}>
+          <div className="modal-content" style={{ width: "70vw" }}>
             <div className="modal-header">
               <h1 className="modal-title fs-5" id="exampleModalLabel">
                 <div className="d-flex align-items-center">Applicants</div>
@@ -107,22 +113,40 @@ function CompanyJobs() {
                   {applicants.map((student, index) => {
                     return (
                       <tr key={index}>
-                        <td>{student.pictureLink}</td>
+                        <td>
+                          <img
+                            src={student.pictureLink}
+                            alt="Student profile"
+                            height={"50px"}
+                          />
+                        </td>
                         <td>{student.name}</td>
                         <td>{student.email}</td>
                         <td>{student.phone}</td>
                         <td>{student.location}</td>
                         <td>
-                          <button className="btn btn-md btn-success">
-                            Resume
-                          </button>
+                          <a href={student.resumeLink} target="_blank">
+                            <button className="btn btn-md btn-success">
+                              Resume
+                            </button>
+                          </a>
                         </td>
                         <td>
                           <div className="d-flex">
-                            <button className="btn btn-sm btn-success">
+                            <button
+                              className="btn btn-sm btn-success"
+                              onClick={() => {
+                                changeStatus("accept", student._id, jobId);
+                              }}
+                            >
                               Accept
                             </button>
-                            <button className="btn btn-sm btn-danger mx-2">
+                            <button
+                              className="btn btn-sm btn-danger mx-2"
+                              onClick={() => {
+                                changeStatus("reject", student._id, jobId);
+                              }}
+                            >
                               Reject
                             </button>
                           </div>
@@ -133,23 +157,6 @@ function CompanyJobs() {
                 </tbody>
               </table>
             </div>
-            {/* <div className="modal-footer">
-              <button
-                type="button"
-                className="btn btn-secondary"
-                data-bs-dismiss="modal"
-                ref={refClose}
-              >
-                Close
-              </button>
-              <button
-                type="button"
-                onClick={handleClick}
-                className="btn btn-primary"
-              >
-                Save changes
-              </button>
-            </div> */}
           </div>
         </div>
       </div>
@@ -176,7 +183,7 @@ function CompanyJobs() {
                     <button
                       className="btn btn-md btn-success"
                       onClick={() => {
-                        openModal(job.applicants);
+                        openModal(job.applicants, job._id);
                       }}
                     >
                       View Applicants

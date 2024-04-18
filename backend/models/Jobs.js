@@ -27,6 +27,21 @@ const JobsSchema = new Schema({
     require: true,
   },
 
+  duration: {
+    type: String,
+    require: true,
+  },
+
+  startDate: {
+    type: Date,
+    require: true,
+  },
+
+  openings: {
+    type: String,
+    require: true,
+  },
+
   applicants: [{ type: mongoose.Schema.Types.ObjectId, ref: "student" }],
 
   timestamp: {

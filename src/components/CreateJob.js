@@ -17,6 +17,9 @@ function CreateJob() {
     roleName: "",
     minCTC: "",
     maxCTC: "",
+    duration: "",
+    openings: "",
+    startDate: "",
   });
   let tempCountries = countries.slice(0, 11);
 
@@ -36,6 +39,9 @@ function CreateJob() {
             location: location,
             minCTC: details.minCTC,
             maxCTC: details.maxCTC,
+            duration: details.duration,
+            openings: details.openings,
+            startDate: details.startDate,
           }),
         }
       );
@@ -114,10 +120,7 @@ function CreateJob() {
 
   return (
     <>
-      <div
-        className="container d-flex justify-content-center"
-        style={{ marginTop: "12%" }}
-      >
+      <div className="container d-flex justify-content-center">
         <form
           className="companySignup createJobContainer mt-2"
           onSubmit={createJob}
@@ -131,6 +134,42 @@ function CreateJob() {
               className="form-control"
               id="roleNAme"
               name="roleName"
+              onChange={onChange}
+            />
+          </div>
+          <div className="mb-3">
+            <label htmlFor="duration" className="form-label">
+              Duration in Months
+            </label>
+            <input
+              type="text"
+              className="form-control"
+              id="duration"
+              name="duration"
+              onChange={onChange}
+            />
+          </div>
+          <div className="mb-3">
+            <label htmlFor="openings" className="form-label">
+              Number of openings
+            </label>
+            <input
+              type="number"
+              className="form-control"
+              id="openings"
+              name="openings"
+              onChange={onChange}
+            />
+          </div>
+          <div className="mb-3">
+            <label htmlFor="startDate" className="form-label">
+              Start Date
+            </label>
+            <input
+              type="date"
+              className="form-control"
+              id="startDate"
+              name="startDate"
               onChange={onChange}
             />
           </div>

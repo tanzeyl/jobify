@@ -125,6 +125,9 @@ router.post(
     body("location").notEmpty(),
     body("minCTC").notEmpty(),
     body("maxCTC").notEmpty(),
+    body("duration").notEmpty(),
+    body("openings").notEmpty(),
+    body("startDate").notEmpty(),
   ],
   async (req, res) => {
     const errors = validationResult(req);
@@ -147,6 +150,9 @@ router.post(
           location: req.body.location,
           minCTC: req.body.minCTC,
           maxCTC: req.body.maxCTC,
+          duration: req.body.duration,
+          openings: req.body.openings,
+          startDate: req.body.startDate,
         });
         const transaction = await TransactionsCompany.create({
           company: req.company.id,
@@ -443,7 +449,7 @@ router.post(
 // ROUTE 7: Fetch all jobs using GET. => "/api/auth/viewJobs". Requires log-in.
 router.get("/viewJobs", fetchUser, async (req, res) => {
   try {
-    let jobs = await Jobs.find().select("-applicants");
+    let jobs = await Jobs.find().populate("company");
     res.status(200).json({ success: true, jobs });
   } catch (err) {
     res.status(500).json({ success: false, message: "Internal server error." });
@@ -459,7 +465,7 @@ router.get("/apply/:id", fetchUser, async (req, res) => {
     let balance = student.balance;
     if (balance >= 0) {
       if (job.applicants.includes(req.user.id)) {
-        res.status(400).json({
+        return res.status(400).json({
           success: false,
           message: "You have already applied for this job.",
         });
@@ -473,7 +479,10 @@ router.get("/apply/:id", fetchUser, async (req, res) => {
       );
       balance = balance - rr + rr / 5;
       let appliedJobs = student.appliedJobs;
-      appliedJobs.push(req.params.id);
+      if (appliedJobs.some((obj) => obj["jobId"] === req.params.id)) {
+        console.log("HELLO");
+      }
+      appliedJobs.push({ jobId: req.params.id, status: "applied" });
       student = await Student.findByIdAndUpdate(
         req.user.id,
         { $set: { balance, appliedJobs } },
@@ -542,7 +551,7 @@ router.get("/transactions", fetchCompany, async (req, res) => {
   }
 });
 
-// ROUTE 9: Get all transactions details of a company using GET. => "/api/auth/transactions". Requires log-in.
+// ROUTE 9: Get all transactions details of a student using GET. => "/api/auth/transactions". Requires log-in.
 router.get("/paymentHistory", fetchUser, async (req, res) => {
   try {
     const transactions = await TransactionsStudent.find({
@@ -661,27 +670,51 @@ router.get("/getStudentDetails", fetchUser, async (req, res) => {
   }
 });
 
-// ROUTE 14: Return name, logo and location of a company using POST. => "/api/auth/getCompany". Requires log-in.
+// ROUTE 14: Get all applied jobs of a student using GET. => "/api/auth/appliedJobs". Requires log-in.
+router.get("/appliedJobs", fetchUser, async (req, res) => {
+  try {
+    const student = await Student.findById(req.user.id).select("-password");
+    const appliedJobs = student.appliedJobs;
+    const jobs = [];
+    for (let i = 0; i < appliedJobs.length; i++) {
+      let job = await Jobs.findById(appliedJobs[i].jobId).select("-applicants");
+      job.status = appliedJobs[i];
+      jobs.push(job);
+    }
+    res
+      .status(200)
+      .json({ success: true, appliedJobs: jobs, status: appliedJobs });
+  } catch (err) {
+    res.status(500).json({ success: false, message: "Internal server error." });
+  }
+});
+
+// ROUTE 15: Change application status of a student using POST. => "/api/auth/changeStatus". Requires log-in.
 router.post(
-  "/getCompany",
-  fetchUser,
-  [body("companyID").notEmpty()],
+  "/changeStatus",
+  fetchCompany,
+  [body("status").notEmpty(), body("id").notEmpty(), body("jobId").notEmpty()],
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      res.status(400).json({ success: false, errors: errors.array() });
+      return res.status(400).json({ success: false, errors: errors.array() });
     }
     try {
-      const company = await Company.findById(req.body.companyID).select(
-        "-password"
-      );
-      if (!company) {
-        res
-          .status(404)
-          .json({ success: false, message: "Unauthorized access." });
-      } else {
-        res.status(200).json({ success: true, company });
+      let student = await Student.findById(req.body.id);
+      let appliedJobs = student.appliedJobs;
+      for (let i = 0; i < appliedJobs.length; i++) {
+        if (appliedJobs[i].jobId.toString() === req.body.jobId.toString()) {
+          appliedJobs[i].status = req.body.status + "ed";
+          student.appliedJobs = appliedJobs;
+          student = await student.save();
+          return res
+            .status(200)
+            .json({ success: true, message: "Status updated successfully." });
+        }
       }
+      return res
+        .status(401)
+        .json({ success: false, message: "Some error occured." });
     } catch (err) {
       res
         .status(500)

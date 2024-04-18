@@ -11,6 +11,7 @@ import CompanyJobs from "./components/CompanyJobs";
 import Alert from "./components/Alert";
 import StudentProfile from "./components/StudentProfile";
 import AllJobs from "./components/AllJobs";
+import AppliedJobs from "./components/AppliedJobs";
 
 function App() {
   return (
@@ -38,6 +39,7 @@ function App() {
                 element={<StudentProfile />}
               />
               <Route exact path="/viewAllJobs" element={<AllJobs />} />
+              <Route exact path="/appliedJobs" element={<AppliedJobs />} />
             </Routes>
           </div>
         </div>

@@ -67,7 +67,8 @@ function Login() {
         const data = await response.json();
         if (data.success) {
           localStorage.setItem("token", data.authtoken);
-          navigate("/companyProfile");
+          localStorage.setItem("userType", "student");
+          navigate("/studentProfile");
         }
       } catch (error) {
         console.error("Error saving user profile:", error);
