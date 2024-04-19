@@ -12,8 +12,9 @@ import Alert from "./components/Alert";
 import StudentProfile from "./components/StudentProfile";
 import AllJobs from "./components/AllJobs";
 import AppliedJobs from "./components/AppliedJobs";
-import CheckoutForm from "./components/CheckoutForm";
 import PaymentComponent from "./components/PaymentComponent";
+import StudentTransactions from "./components/StudentTransactions";
+import CompanyTransactions from "./components/CompanyTransactions";
 
 function App() {
   return (
@@ -43,6 +44,16 @@ function App() {
               <Route exact path="/viewAllJobs" element={<AllJobs />} />
               <Route exact path="/appliedJobs" element={<AppliedJobs />} />
               <Route exact path="/paymentForm" element={<PaymentComponent />} />
+              <Route
+                exact
+                path="/studentTransactions"
+                element={<StudentTransactions />}
+              />
+              <Route
+                exact
+                path="/companyTransactions"
+                element={<CompanyTransactions />}
+              />
             </Routes>
           </div>
         </div>

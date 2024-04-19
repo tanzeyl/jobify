@@ -19,7 +19,6 @@ const fetchUser = require("../middleware/fetchUser");
 const Job = require("../models/Jobs");
 
 const JWT_STRING = process.env.REACT_APP_JWT_SECRET;
-const DOMAIN = process.env.DOMAIN;
 
 const transporter = nodemailer.createTransport({
   service: "gmail",
@@ -763,6 +762,40 @@ router.post("/userPayment", fetchUser, async (req, res) => {
     balance = balance + parseInt(amount);
     student.balance = balance;
     student.save();
+    return res.json({
+      success: true,
+      message: "Payment successful",
+      paymentIntent,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: "Payment failed" });
+  }
+});
+
+// ROUTE 16: Make user payments using POST. => /api/auth/userPayment. Requires log-in.
+router.post("/companyPayment", fetchCompany, async (req, res) => {
+  const { amount, currency, paymentMethodId } = req.body;
+  try {
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount,
+      currency,
+      payment_method_types: ["card"],
+      payment_method: paymentMethodId,
+      confirm: true,
+      return_url: `${process.env.REACT_APP_FRONTEND_URL}/studentProfile`,
+    });
+    const transaction = await TransactionsCompany.create({
+      company: req.company.id,
+      type: "credit",
+      amount: amount,
+      reason: `Completed a payment of Rs. ${amount}/-.`,
+    });
+    let company = await Company.findById(req.company.id);
+    let balance = parseInt(company.balance);
+    balance = balance + parseInt(amount);
+    company.balance = balance;
+    company.save();
     return res.json({
       success: true,
       message: "Payment successful",

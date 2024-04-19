@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import Spinner from "./Spinner";
 
 function CompanyProfile() {
@@ -228,7 +228,7 @@ function CompanyProfile() {
             src={details.logoLink}
             alt="Company Logo"
           />
-          <div className="companyDetails">
+          <div className="companyDetails mb-4">
             <button className="btn btn-md btn-success mb-4" onClick={openModal}>
               Edit details
             </button>
@@ -253,6 +253,24 @@ function CompanyProfile() {
                 disabled
               />
             </div>
+            <div className="mb-3">
+              <label htmlFor="balance" className="form-label">
+                Current Balance
+              </label>
+              <input
+                type="text"
+                className="form-control"
+                id="balance"
+                name="balance"
+                value={details.balance}
+                disabled
+              />
+            </div>
+            <Link to="/paymentForm">
+              <button className="btn btn-md btn-success mb-2">
+                Buy more coins
+              </button>
+            </Link>
             <div className="mb-3">
               <label htmlFor="website" className="form-label">
                 Website Link

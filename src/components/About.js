@@ -17,12 +17,6 @@ export default function About() {
             perfect job has never been easier. Join our community today and take
             the next step towards a fulfilling career!
           </p>
-          <a href="/" className="card-link">
-            Login
-          </a>
-          <a href="/" className="card-link">
-            Sign Up
-          </a>
         </div>
       </div>
     </>

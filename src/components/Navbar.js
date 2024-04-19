@@ -94,6 +94,32 @@ export default function Navbar() {
                 </div>
               )}
 
+            {localStorage.getItem("userType") &&
+              localStorage.getItem("userType") === "student" && (
+                <div className="option">
+                  <Link
+                    className="nav-link optionContent"
+                    to="/studentTransactions"
+                  >
+                    <i className="fa-regular fa-credit-card"></i>
+                    <h5 className="optionTitle">Transactions</h5>
+                  </Link>
+                </div>
+              )}
+
+            {localStorage.getItem("userType") &&
+              localStorage.getItem("userType") === "company" && (
+                <div className="option">
+                  <Link
+                    className="nav-link optionContent"
+                    to="/companyTransactions"
+                  >
+                    <i className="fa-regular fa-credit-card"></i>
+                    <h5 className="optionTitle">Transactions</h5>
+                  </Link>
+                </div>
+              )}
+
             <div className="option">
               <Link className=" nav-link optionContent" to="/">
                 <i className="fa-solid fa-address-card"></i>

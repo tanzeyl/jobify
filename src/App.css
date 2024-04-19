@@ -189,3 +189,10 @@ td {
 .searchBox {
   width: 82vw;
 }
+
+.pieChart {
+  background-color: rgba(148, 255, 0, 0.2);
+  box-shadow: 1px 1px 20px 0px black;
+  border-radius: 20px;
+  margin-left: 45%;
+}

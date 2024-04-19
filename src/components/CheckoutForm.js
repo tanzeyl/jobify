@@ -30,24 +30,45 @@ const CheckoutForm = () => {
       return;
     }
     const { id } = paymentMethod;
-    const response = await fetch(
-      `${process.env.REACT_APP_API_URL}/api/auth/userPayment`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          authtoken: localStorage.getItem("token"),
-        },
-        body: JSON.stringify({
-          amount: amount,
-          currency: "inr",
-          paymentMethodId: id,
-        }),
-      }
-    );
-    const json = await response.json();
-    setLoading(false);
-    navigate("/studentProfile");
+    if (localStorage.getItem("userType") === "student") {
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL}/api/auth/userPayment`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            authtoken: localStorage.getItem("token"),
+          },
+          body: JSON.stringify({
+            amount: amount,
+            currency: "inr",
+            paymentMethodId: id,
+          }),
+        }
+      );
+      const json = await response.json();
+      setLoading(false);
+      navigate("/studentProfile");
+    } else {
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL}/api/auth/companyPayment`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "auth-token": localStorage.getItem("token"),
+          },
+          body: JSON.stringify({
+            amount: amount,
+            currency: "inr",
+            paymentMethodId: id,
+          }),
+        }
+      );
+      const json = await response.json();
+      setLoading(false);
+      navigate("/companyProfile");
+    }
   };
 
   return (
