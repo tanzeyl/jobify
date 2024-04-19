@@ -196,3 +196,13 @@ td {
   border-radius: 20px;
   margin-left: 45%;
 }
+
+.alertIcon {
+  background-color: #ffffff;
+  color: black;
+  border-radius: 50%;
+  padding: 3%;
+  font-size: 20px;
+  margin-right: 2%;
+  transition: 1s all linear;
+}

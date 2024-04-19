@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import Spinner from "./Spinner";
 import SelectLocation from "./SelectLocation";
 
-function CompanyProfile() {
+function CompanyProfile(props) {
   document.title = "Jobify - Student Details";
 
   const navigate = useNavigate();
@@ -82,6 +82,7 @@ function CompanyProfile() {
     }
     setLoading(false);
     refClose.current.click();
+    props.showAlert("Details updated successfully.", "success");
   };
 
   const getUserDetails = async () => {

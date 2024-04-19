@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Country, State, City } from "country-state-city";
 import "../App.css";
 
-function CreateJob() {
+function CreateJob(props) {
   const navigate = useNavigate();
 
   const [countries, setCountries] = useState(Country.getAllCountries());
@@ -49,6 +49,7 @@ function CreateJob() {
       console.log(data);
       if (data.success) {
         navigate("/allPostedJobs");
+        props.showAlert("Job created.", "success");
       }
     } catch (error) {
       console.error("Error saving user profile:", error);

@@ -7,11 +7,11 @@ const stripePromise = loadStripe(
   "pk_test_51P6oiySFDJeJuSO27j8EB4NmP0jQDzhe55S0KLfcAdseOddaO7i9dx3HjycXOO6Bpp0sF8FD9bD6fwPhq9QWzN3B00gzWbVNE2"
 );
 
-const PaymentComponent = () => {
+const PaymentComponent = (props) => {
   return (
     <div>
       <Elements stripe={stripePromise}>
-        <CheckoutForm />
+        <CheckoutForm showAlert={props.showAlert} />
       </Elements>
     </div>
   );

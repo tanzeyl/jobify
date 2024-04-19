@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import Spinner from "./Spinner";
 import "../styles/Payment.css";
 
-const CheckoutForm = () => {
+const CheckoutForm = (props) => {
   const stripe = useStripe();
   const elements = useElements();
   const navigate = useNavigate();
@@ -69,6 +69,7 @@ const CheckoutForm = () => {
       setLoading(false);
       navigate("/companyProfile");
     }
+    props.showAlert("Payment completed.", "success");
   };
 
   return (

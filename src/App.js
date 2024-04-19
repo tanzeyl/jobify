@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import About from "./components/About";
@@ -17,6 +17,18 @@ import StudentTransactions from "./components/StudentTransactions";
 import CompanyTransactions from "./components/CompanyTransactions";
 
 function App() {
+  const [alert, setAlert] = useState(null);
+
+  const showAlert = (message, type) => {
+    setAlert({
+      message: message,
+      type: type,
+    });
+    setTimeout(() => {
+      setAlert(null);
+    }, 1500);
+  };
+
   return (
     <>
       <Router>
@@ -25,6 +37,7 @@ function App() {
             <Navbar />
           </div>
           <div className="col-md-7">
+            <Alert alert={alert} />
             <Routes>
               <Route exact path="/" element={<About />} />
               <Route exact path="/signup" element={<Signup />} />
@@ -32,18 +45,34 @@ function App() {
               <Route
                 exact
                 path="/companyProfile"
-                element={<CompanyProfile />}
+                element={<CompanyProfile showAlert={showAlert} />}
               />
-              <Route exact path="/createJob" element={<CreateJob />} />
-              <Route exact path="/allPostedJobs" element={<CompanyJobs />} />
+              <Route
+                exact
+                path="/createJob"
+                element={<CreateJob showAlert={showAlert} />}
+              />
+              <Route
+                exact
+                path="/allPostedJobs"
+                element={<CompanyJobs showAlert={showAlert} />}
+              />
               <Route
                 exact
                 path="/studentProfile"
-                element={<StudentProfile />}
+                element={<StudentProfile showAlert={showAlert} />}
               />
-              <Route exact path="/viewAllJobs" element={<AllJobs />} />
+              <Route
+                exact
+                path="/viewAllJobs"
+                element={<AllJobs showAlert={showAlert} />}
+              />
               <Route exact path="/appliedJobs" element={<AppliedJobs />} />
-              <Route exact path="/paymentForm" element={<PaymentComponent />} />
+              <Route
+                exact
+                path="/paymentForm"
+                element={<PaymentComponent showAlert={showAlert} />}
+              />
               <Route
                 exact
                 path="/studentTransactions"

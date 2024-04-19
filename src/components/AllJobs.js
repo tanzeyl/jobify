@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-function AllJobs() {
+function AllJobs(props) {
   document.title = "Jobify - All Jobs";
   const navigate = useNavigate();
   const [jobs, setJobs] = useState([]);
@@ -33,7 +33,11 @@ function AllJobs() {
       }
     );
     const json = await response.json();
-    alert(json.message);
+    if (json.success === true) {
+      props.showAlert(json.message, "success");
+    } else {
+      props.showAlert(json.message, "failure");
+    }
   };
 
   useEffect(() => {

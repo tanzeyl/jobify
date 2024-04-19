@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import "../App.css";
 
-function CompanyJobs() {
+function CompanyJobs(props) {
   const [jobs, setJobs] = useState([]);
   const [applicants, setApplicants] = useState([]);
   const [jobId, setJobId] = useState();
@@ -11,7 +11,27 @@ function CompanyJobs() {
   const ref = useRef(null);
 
   const changeStatus = async (status, id, jobId) => {
-    console.log(status, id, jobId);
+    const response = await fetch(
+      `${process.env.REACT_APP_API_URL}/api/auth/changeStatus`,
+      {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+          "auth-token": localStorage.getItem("token"),
+        },
+        body: JSON.stringify({
+          status: status,
+          id: id,
+          jobId: jobId,
+        }),
+      }
+    );
+    const json = await response.json();
+    if (json.success === true) {
+      props.showAlert("Status updated successfully.", "success");
+    } else {
+      props.showAlert("Some error occured.", "failure");
+    }
   };
 
   const openModal = async (applicants, id) => {

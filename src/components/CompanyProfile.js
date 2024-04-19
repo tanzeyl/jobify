@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import Spinner from "./Spinner";
 
-function CompanyProfile() {
+function CompanyProfile(props) {
   document.title = "Jobify - Company Details";
 
   const navigate = useNavigate();
@@ -70,6 +70,7 @@ function CompanyProfile() {
       }
     }
     setLoading(false);
+    props.showAlert("Details updated successfully.", "success");
     refClose.current.click();
   };
 
